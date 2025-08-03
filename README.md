@@ -184,4 +184,52 @@ npx hardhat console --network localhost
 ---
 
 **Note**: This project uses a Mock Oracle for development. For production use, integrate with real oracle price feeds.
-# OracleSmartContractWithChainlink
+
+## 🔧 Environment Variables
+
+```bash
+# Oracle Private Keys (for testing only)
+ORACLE_PRIVATE_KEY="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+
+# Network URLs
+ETHEREUM_RPC_URL="http://localhost:8545"
+
+# Contract Addresses (updated automatically after deployment)
+MOCK_ORACLE_ADDRESS="0x8A791620dd6260079BF849Dc5567aDC3F2FdC318"
+PRICE_CONSUMER_ADDRESS="0x610178dA211FEF7D417bC0e6FeD39F05609AD788"
+ORACLE_TOKEN_ADDRESS="0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e"
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Node not running**: Ensure Hardhat node is running on port 8545
+2. **Contract not deployed**: Run deployment script first
+3. **Wrong network**: Check you're using `--network localhost`
+4. **Gas issues**: Increase gas limit in transactions
+5. **Browser interface not loading**: Ensure Python HTTP server is running on port 3000
+6. **CORS issues**: Use the Python HTTP server instead of opening HTML directly
+
+### Useful Commands
+
+```bash
+# Check if node is running
+curl -X POST http://localhost:8545 -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+
+# Check if HTTP server is running
+curl http://localhost:3000/
+
+# Start browser interface
+python3 -m http.server 3000 && open http://localhost:3000/index.html
+
+# Check contract deployment
+npx hardhat verify --network localhost <CONTRACT_ADDRESS>
+
+# Debug transactions
+npx hardhat run scripts/debug.js --network localhost
+```
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
