@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle Smart Contract API Explorer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+        
+        .section h2 {
+            color: #2d3748;
+            margin-top: 0;
+            border-bottom: 2px solid #4299e1;
+            padding-bottom: 10px;
+        }
+        
+        .contract-info {
+            background: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .api-endpoint {
+            background: #f0fff4;
+            border-left: 4px solid #48bb78;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .test-button {
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .test-button:hover {
+            background: #3182ce;
+        }
+        
+        .result-box {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .link {
+            color: #4299e1;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status.online {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status.offline {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 Oracle Smart Contract API Explorer</h1>
+        
+        <div class="section">
+            <h2>📊 System Status</h2>
+            <div class="grid">
+                <div>
+                    <strong>Hardhat Node:</strong> 
+                    <span id="nodeStatus" class="status offline">Checking...</span>
+                    <p><span class="code">http://localhost:8545</span></p>
+                </div>
+                <div>
+                    <strong>Current Block:</strong> 
+                    <span id="blockNumber">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📝 Contract Addresses</h2>
+            <div class="contract-info">
+                <strong>Mock Oracle:</strong> <span class="code">0x8A791620dd6260079BF849Dc5567aDC3F2FdC318</span><br>
+                <strong>Price Consumer:</strong> <span class="code">0x610178dA211FEF7D417bC0e6FeD39F05609AD788</span><br>
+                <strong>Oracle Token:</strong> <span class="code">0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🧪 Quick Tests</h2>
+            <div class="grid">
+                <div class="api-endpoint">
+                    <h3>📈 Get Oracle Price</h3>
+                    <p>Get current price from Mock Oracle</p>
+                    <button class="test-button" onclick="getOraclePrice()">Test Now</button>
+                </div>
+                
+                <div class="api-endpoint">
+                    <h3>🪙 Get Token Supply</h3>
+                    <p>Get total Oracle Token supply</p>
+                    <button class="test-button" onclick="getTokenSupply()">Test Now</button>
+                </div>
+                
+                <div class="api-endpoint">
+                    <h3>💰 Get Account Balance</h3>
+                    <p>Get ETH balance of deployer account</p>
+                    <button class="test-button" onclick="getBalance()">Test Now</button>
+                </div>
+                
+                <div class="api-endpoint">
+                    <h3>🏗️ Get Block Info</h3>
+                    <p>Get current block number</p>
+                    <button class="test-button" onclick="getBlockNumber()">Test Now</button>
+                </div>
+            </div>
+            
+            <h3>📋 Test Results:</h3>
+            <div id="results" class="result-box">Click any test button above to see results...</div>
+        </div>
+
+        <div class="section">
+            <h2>🔗 External Tools</h2>
+            <div class="grid">
+                <div>
+                    <h3>Swagger UI</h3>
+                    <p>Interactive API documentation</p>
+                    <a href="https://editor.swagger.io/" target="_blank" class="link">Open Swagger Editor</a>
+                </div>
+                
+                <div>
+                    <h3>Postman Collection</h3>
+                    <p>Ready-to-use API collection</p>
+                    <a href="./postman-collection.json" target="_blank" class="link">Download Collection</a>
+                </div>
+                
+                <div>
+                    <h3>OpenAPI Spec</h3>
+                    <p>Full API specification</p>
+                    <a href="./openapi.yaml" target="_blank" class="link">View OpenAPI</a>
+                </div>
+                
+                <div>
+                    <h3>API Documentation</h3>
+                    <p>Detailed usage guide</p>
+                    <a href="./API-README.md" target="_blank" class="link">Read Docs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const RPC_URL = 'http://localhost:8545';
+        const CONTRACTS = {
+            MOCK_ORACLE: '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318',
+            PRICE_CONSUMER: '0x610178dA211FEF7D417bC0e6FeD39F05609AD788',
+            ORACLE_TOKEN: '0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e',
+            DEPLOYER: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+        };
+
+        async function rpcCall(method, params = []) {
+            try {
+                const response = await fetch(RPC_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: method,
+                        params: params,
+                        id: Math.floor(Math.random() * 1000000)
+                    })
+                });
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                return { error: { message: error.message } };
+            }
+        }
+
+        function displayResult(title, data) {
+            const resultsDiv = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let display = `[${timestamp}] ${title}\n`;
+            display += '='.repeat(50) + '\n';
+            display += JSON.stringify(data, null, 2) + '\n\n';
+            
+            resultsDiv.textContent = display + resultsDiv.textContent;
+        }
+
+        async function checkNodeStatus() {
+            const result = await rpcCall('eth_blockNumber');
+            const statusEl = document.getElementById('nodeStatus');
+            const blockEl = document.getElementById('blockNumber');
+            
+            if (result.result) {
+                statusEl.textContent = 'Online';
+                statusEl.className = 'status online';
+                blockEl.textContent = parseInt(result.result, 16);
+            } else {
+                statusEl.textContent = 'Offline';
+                statusEl.className = 'status offline';
+                blockEl.textContent = 'N/A';
+            }
+        }
+
+        async function getOraclePrice() {
+            const result = await rpcCall('eth_call', [
+                {
+                    to: CONTRACTS.MOCK_ORACLE,
+                    data: '0x50d25bcd' // latestAnswer()
+                },
+                'latest'
+            ]);
+            
+            if (result.result) {
+                const priceHex = result.result;
+                const priceInt = parseInt(priceHex, 16);
+                const priceUSD = priceInt / Math.pow(10, 8);
+                
+                displayResult('🔮 Oracle Price', {
+                    raw: result,
+                    decoded: {
+                        hex: priceHex,
+                        integer: priceInt,
+                        usd: `$${priceUSD.toFixed(2)}`
+                    }
+                });
+            } else {
+                displayResult('❌ Oracle Price Error', result);
+            }
+        }
+
+        async function getTokenSupply() {
+            const result = await rpcCall('eth_call', [
+                {
+                    to: CONTRACTS.ORACLE_TOKEN,
+                    data: '0x18160ddd' // totalSupply()
+                },
+                'latest'
+            ]);
+            
+            if (result.result) {
+                const supplyHex = result.result;
+                const supplyInt = parseInt(supplyHex, 16);
+                const supplyTokens = supplyInt / Math.pow(10, 18);
+                
+                displayResult('🪙 Token Supply', {
+                    raw: result,
+                    decoded: {
+                        hex: supplyHex,
+                        integer: supplyInt,
+                        tokens: `${supplyTokens.toFixed(6)} ORACLE`
+                    }
+                });
+            } else {
+                displayResult('❌ Token Supply Error', result);
+            }
+        }
+
+        async function getBalance() {
+            const result = await rpcCall('eth_getBalance', [CONTRACTS.DEPLOYER, 'latest']);
+            
+            if (result.result) {
+                const balanceHex = result.result;
+                const balanceWei = parseInt(balanceHex, 16);
+                const balanceEth = balanceWei / Math.pow(10, 18);
+                
+                displayResult('💰 Account Balance', {
+                    raw: result,
+                    decoded: {
+                        hex: balanceHex,
+                        wei: balanceWei,
+                        eth: `${balanceEth.toFixed(6)} ETH`
+                    }
+                });
+            } else {
+                displayResult('❌ Balance Error', result);
+            }
+        }
+
+        async function getBlockNumber() {
+            const result = await rpcCall('eth_blockNumber');
+            
+            if (result.result) {
+                const blockHex = result.result;
+                const blockInt = parseInt(blockHex, 16);
+                
+                displayResult('🏗️ Current Block', {
+                    raw: result,
+                    decoded: {
+                        hex: blockHex,
+                        number: blockInt
+                    }
+                });
+            } else {
+                displayResult('❌ Block Number Error', result);
+            }
+        }
+
+        // Check node status on page load
+        checkNodeStatus();
+        
+        // Update status every 10 seconds
+        setInterval(checkNodeStatus, 10000);
+    </script>
+</body>
+</html>
