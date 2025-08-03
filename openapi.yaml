@@ -1,0 +1,356 @@
+openapi: 3.1.0
+info:
+  title: Oracle Smart Contract API
+  description: |
+    JSON-RPC API for interacting with the Oracle-enabled Smart Contract project.
+    This includes Hardhat node endpoints and contract interaction methods.
+    
+    ## Contract Addresses
+    - **Mock Oracle**: `0x8A791620dd6260079BF849Dc5567aDC3F2FdC318`
+    - **Price Consumer**: `0x610178dA211FEF7D417bC0e6FeD39F05609AD788`
+    - **Oracle Token**: `0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e`
+    
+    ## Usage
+    All requests are POST requests with JSON-RPC 2.0 format.
+    Set `Content-Type: application/json` in headers.
+  version: 1.0.0
+  contact:
+    name: Oracle Smart Contract Project
+    url: https://github.com/your-repo/oracle-smart-contracts
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8545
+    description: Local Hardhat Network
+
+paths:
+  /:
+    post:
+      summary: JSON-RPC Endpoint
+      description: Main JSON-RPC endpoint for Ethereum/Hardhat node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/BlockNumberRequest'
+                - $ref: '#/components/schemas/AccountsRequest'
+                - $ref: '#/components/schemas/BalanceRequest'
+                - $ref: '#/components/schemas/ContractCallRequest'
+                - $ref: '#/components/schemas/SendTransactionRequest'
+            examples:
+              get_block_number:
+                summary: Get Current Block Number
+                value:
+                  jsonrpc: "2.0"
+                  method: "eth_blockNumber"
+                  params: []
+                  id: 1
+              get_accounts:
+                summary: Get All Accounts
+                value:
+                  jsonrpc: "2.0"
+                  method: "eth_accounts"
+                  params: []
+                  id: 1
+              get_balance:
+                summary: Get Account Balance
+                value:
+                  jsonrpc: "2.0"
+                  method: "eth_getBalance"
+                  params: ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", "latest"]
+                  id: 1
+              get_oracle_price:
+                summary: Get Latest Price from Mock Oracle
+                value:
+                  jsonrpc: "2.0"
+                  method: "eth_call"
+                  params: [
+                    {
+                      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                      "data": "0x50d25bcd"
+                    },
+                    "latest"
+                  ]
+                  id: 1
+              get_token_balance:
+                summary: Get Oracle Token Balance
+                value:
+                  jsonrpc: "2.0"
+                  method: "eth_call"
+                  params: [
+                    {
+                      "to": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+                      "data": "0x70a082310000000000000000000000000xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+                    },
+                    "latest"
+                  ]
+                  id: 1
+              get_token_total_supply:
+                summary: Get Oracle Token Total Supply
+                value:
+                  jsonrpc: "2.0"
+                  method: "eth_call"
+                  params: [
+                    {
+                      "to": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+                      "data": "0x18160ddd"
+                    },
+                    "latest"
+                  ]
+                  id: 1
+              update_oracle_price:
+                summary: Update Mock Oracle Price
+                value:
+                  jsonrpc: "2.0"
+                  method: "eth_sendTransaction"
+                  params: [
+                    {
+                      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+                      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                      "data": "0x8c6c4de60000000000000000000000000000000000000000000000000000003a352944000",
+                      "gas": "0x76c0"
+                    }
+                  ]
+                  id: 1
+              mint_tokens:
+                summary: Mint Oracle Tokens Based on Price
+                value:
+                  jsonrpc: "2.0"
+                  method: "eth_sendTransaction"
+                  params: [
+                    {
+                      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+                      "to": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+                      "data": "0x6a627842000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+                      "gas": "0x76c0"
+                    }
+                  ]
+                  id: 1
+      responses:
+        '200':
+          description: Successful JSON-RPC response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonRpcResponse'
+              examples:
+                block_number_response:
+                  summary: Block Number Response
+                  value:
+                    jsonrpc: "2.0"
+                    id: 1
+                    result: "0x6"
+                accounts_response:
+                  summary: Accounts Response
+                  value:
+                    jsonrpc: "2.0"
+                    id: 1
+                    result: ["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "0x70997970c51812dc3a010c7d01b50e0d17dc79c8"]
+                balance_response:
+                  summary: Balance Response
+                  value:
+                    jsonrpc: "2.0"
+                    id: 1
+                    result: "0x21e19e0c9bab2400000"
+                price_response:
+                  summary: Oracle Price Response
+                  value:
+                    jsonrpc: "2.0"
+                    id: 1
+                    result: "0x00000000000000000000000000000000000000000000000000000002e90edd000"
+        '400':
+          description: Bad Request - Invalid JSON-RPC
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonRpcError'
+
+components:
+  schemas:
+    JsonRpcRequest:
+      type: object
+      required:
+        - jsonrpc
+        - method
+        - id
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+        method:
+          type: string
+        params:
+          type: array
+        id:
+          oneOf:
+            - type: number
+            - type: string
+
+    BlockNumberRequest:
+      allOf:
+        - $ref: '#/components/schemas/JsonRpcRequest'
+        - type: object
+          properties:
+            method:
+              enum: ["eth_blockNumber"]
+            params:
+              type: array
+              maxItems: 0
+
+    AccountsRequest:
+      allOf:
+        - $ref: '#/components/schemas/JsonRpcRequest'
+        - type: object
+          properties:
+            method:
+              enum: ["eth_accounts"]
+            params:
+              type: array
+              maxItems: 0
+
+    BalanceRequest:
+      allOf:
+        - $ref: '#/components/schemas/JsonRpcRequest'
+        - type: object
+          properties:
+            method:
+              enum: ["eth_getBalance"]
+            params:
+              type: array
+              items:
+                type: string
+              minItems: 2
+              maxItems: 2
+
+    ContractCallRequest:
+      allOf:
+        - $ref: '#/components/schemas/JsonRpcRequest'
+        - type: object
+          properties:
+            method:
+              enum: ["eth_call"]
+            params:
+              type: array
+              items:
+                oneOf:
+                  - type: object
+                    properties:
+                      to:
+                        type: string
+                      data:
+                        type: string
+                  - type: string
+              minItems: 2
+              maxItems: 2
+
+    SendTransactionRequest:
+      allOf:
+        - $ref: '#/components/schemas/JsonRpcRequest'
+        - type: object
+          properties:
+            method:
+              enum: ["eth_sendTransaction"]
+            params:
+              type: array
+              items:
+                type: object
+                properties:
+                  from:
+                    type: string
+                  to:
+                    type: string
+                  data:
+                    type: string
+                  gas:
+                    type: string
+                  value:
+                    type: string
+
+    JsonRpcResponse:
+      type: object
+      required:
+        - jsonrpc
+        - id
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+        id:
+          oneOf:
+            - type: number
+            - type: string
+        result:
+          description: The result of the method call
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+
+    JsonRpcError:
+      type: object
+      required:
+        - jsonrpc
+        - id
+        - error
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+        id:
+          oneOf:
+            - type: number
+            - type: string
+            - type: "null"
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+
+    ErrorObject:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          description: Additional error information
+
+  examples:
+    OracleContractMethods:
+      summary: Oracle Smart Contract Methods
+      description: |
+        Common function selectors for Oracle contracts:
+        
+        **Mock Oracle (0x5FbDB2315678afecb367f032d93F642f64180aa3)**
+        - `latestAnswer()`: `0x50d25bcd`
+        - `updateAnswer(int256)`: `0x8c6c4de6`
+        - `decimals()`: `0x313ce567`
+        - `description()`: `0x7284e416`
+        
+        **Price Consumer (0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512)**
+        - `getLatestPrice()`: `0x8e15f473`
+        - `latestPrice()`: `0x9a6fc8f5`
+        - `lastUpdateTime()`: `0x605629d6`
+        - `trustedOracle()`: `0x8da5cb5b`
+        
+        **Oracle Token (0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0)**
+        - `balanceOf(address)`: `0x70a08231`
+        - `totalSupply()`: `0x18160ddd` 
+        - `name()`: `0x06fdde03`
+        - `symbol()`: `0x95d89b41`
+        - `mintBasedOnPrice(address)`: `0x6a627842`
+        - `getCurrentOraclePrice()`: `0x8e15f473`
+
+tags:
+  - name: Node Operations
+    description: Basic Ethereum node operations
+  - name: Contract Calls
+    description: Read-only contract method calls
+  - name: Transactions
+    description: State-changing contract transactions
+  - name: Oracle Operations
+    description: Oracle-specific functionality

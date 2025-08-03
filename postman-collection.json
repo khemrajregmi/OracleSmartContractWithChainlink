@@ -1,0 +1,587 @@
+{
+  "info": {
+    "name": "Oracle Smart Contract API",
+    "description": "Complete API collection for Oracle-enabled Smart Contract project with Chainlink integration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set common variables",
+          "pm.globals.set('hardhat_url', 'http://localhost:8545');",
+          "",
+          "// Contract addresses",
+          "pm.globals.set('mock_oracle', '0x5FbDB2315678afecb367f032d93F642f64180aa3');",
+          "pm.globals.set('price_consumer', '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512');",
+          "pm.globals.set('oracle_token', '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0');",
+          "pm.globals.set('deployer_address', '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266');",
+          "",
+          "// Generate random ID for JSON-RPC",
+          "pm.globals.set('rpc_id', Math.floor(Math.random() * 1000000));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8545",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Node Operations",
+      "item": [
+        {
+          "name": "Get Block Number",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_blockNumber\",\n  \"params\": [],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get the current block number from the Hardhat node"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Accounts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_accounts\",\n  \"params\": [],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get all available accounts from the Hardhat node"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Account Balance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_getBalance\",\n  \"params\": [\"{{deployer_address}}\", \"latest\"],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get ETH balance of the deployer account"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Gas Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_gasPrice\",\n  \"params\": [],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get current gas price"
+          },
+          "response": []
+        }
+      ],
+      "description": "Basic Ethereum node operations"
+    },
+    {
+      "name": "Mock Oracle Contract",
+      "item": [
+        {
+          "name": "Get Latest Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{mock_oracle}}\",\n      \"data\": \"0x50d25bcd\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get the latest price from Mock Oracle. Function: latestAnswer()"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Oracle Decimals",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{mock_oracle}}\",\n      \"data\": \"0x313ce567\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get number of decimals for the price feed. Function: decimals()"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Oracle Description",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{mock_oracle}}\",\n      \"data\": \"0x7284e416\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get description of the price feed. Function: description()"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Oracle Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_sendTransaction\",\n  \"params\": [\n    {\n      \"from\": \"{{deployer_address}}\",\n      \"to\": \"{{mock_oracle}}\",\n      \"data\": \"0x8c6c4de60000000000000000000000000000000000000000000000000000003a352944000\",\n      \"gas\": \"0x76c0\"\n    }\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Update the oracle price to $2500 (250000000000 in 8 decimals). Function: updateAnswer(int256)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Mock Oracle contract interactions for price feeds"
+    },
+    {
+      "name": "Price Consumer Contract",
+      "item": [
+        {
+          "name": "Get Latest Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{price_consumer}}\",\n      \"data\": \"0x8e15f473\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get latest price from Price Consumer contract. Function: getLatestPrice()"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stored Latest Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{price_consumer}}\",\n      \"data\": \"0x9a6fc8f5\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get stored latest price from state variable. Function: latestPrice()"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Last Update Time",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{price_consumer}}\",\n      \"data\": \"0x605629d6\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get last update timestamp. Function: lastUpdateTime()"
+          },
+          "response": []
+        }
+      ],
+      "description": "Price Consumer contract that fetches data from Oracle"
+    },
+    {
+      "name": "Oracle Token Contract",
+      "item": [
+        {
+          "name": "Get Token Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{oracle_token}}\",\n      \"data\": \"0x06fdde03\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get token name. Function: name()"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Token Symbol",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{oracle_token}}\",\n      \"data\": \"0x95d89b41\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get token symbol. Function: symbol()"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Total Supply",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{oracle_token}}\",\n      \"data\": \"0x18160ddd\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get total token supply. Function: totalSupply()"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Token Balance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{oracle_token}}\",\n      \"data\": \"0x70a08231000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get token balance for deployer address. Function: balanceOf(address)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Oracle Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_call\",\n  \"params\": [\n    {\n      \"to\": \"{{oracle_token}}\",\n      \"data\": \"0x8e15f473\"\n    },\n    \"latest\"\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get current oracle price from token contract. Function: getCurrentOraclePrice()"
+          },
+          "response": []
+        },
+        {
+          "name": "Mint Tokens Based on Price",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_sendTransaction\",\n  \"params\": [\n    {\n      \"from\": \"{{deployer_address}}\",\n      \"to\": \"{{oracle_token}}\",\n      \"data\": \"0x6a627842000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266\",\n      \"gas\": \"0x76c0\"\n    }\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Mint tokens based on current oracle price. Function: mintBasedOnPrice(address)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Oracle Token contract for price-based token minting"
+    },
+    {
+      "name": "Transaction Utilities",
+      "item": [
+        {
+          "name": "Get Transaction Receipt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_getTransactionReceipt\",\n  \"params\": [\"0x_TRANSACTION_HASH_HERE\"],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get transaction receipt by hash. Replace 0x_TRANSACTION_HASH_HERE with actual hash."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction by Hash",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_getTransactionByHash\",\n  \"params\": [\"0x_TRANSACTION_HASH_HERE\"],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Get transaction details by hash. Replace 0x_TRANSACTION_HASH_HERE with actual hash."
+          },
+          "response": []
+        },
+        {
+          "name": "Estimate Gas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_estimateGas\",\n  \"params\": [\n    {\n      \"from\": \"{{deployer_address}}\",\n      \"to\": \"{{oracle_token}}\",\n      \"data\": \"0x6a627842000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266\"\n    }\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Estimate gas for a transaction (example: mint tokens)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Utility functions for transaction management"
+    },
+    {
+      "name": "Price Conversion Examples",
+      "item": [
+        {
+          "name": "Convert $2000 to Hex",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Convert $2000 to 8 decimal places and then to hex",
+                  "const priceInDollars = 2000;",
+                  "const decimals = 8;",
+                  "const priceWithDecimals = priceInDollars * Math.pow(10, decimals);",
+                  "const hexValue = '0x' + priceWithDecimals.toString(16);",
+                  "",
+                  "console.log('Price in dollars:', priceInDollars);",
+                  "console.log('Price with decimals:', priceWithDecimals);",
+                  "console.log('Hex value:', hexValue);",
+                  "",
+                  "// Pad to 64 characters (32 bytes) for function call",
+                  "const paddedHex = hexValue.replace('0x', '').padStart(64, '0');",
+                  "const functionData = '0x8c6c4de6' + paddedHex;",
+                  "",
+                  "console.log('Function call data:', functionData);",
+                  "pm.globals.set('price_2000_hex', hexValue);",
+                  "pm.globals.set('update_price_2000_data', functionData);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"eth_sendTransaction\",\n  \"params\": [\n    {\n      \"from\": \"{{deployer_address}}\",\n      \"to\": \"{{mock_oracle}}\",\n      \"data\": \"{{update_price_2000_data}}\",\n      \"gas\": \"0x76c0\"\n    }\n  ],\n  \"id\": {{rpc_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Update oracle price to $2000 (auto-calculated hex value)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Examples showing price conversions and calculations"
+    }
+  ]
+}
